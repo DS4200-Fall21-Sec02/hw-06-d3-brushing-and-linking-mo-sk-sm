@@ -2,7 +2,7 @@
 
 This repository is your starting point for hw-06. Assignment details and instructions are below. 
 
-Link to your GitHub pages website: `[insert your *clickable* hyperlink here]`
+Link to your GitHub pages website: https://ds4200-fall21-sec02.github.io/hw-06-d3-brushing-and-linking-mo-sk-sm/
 
 # Aim of the assignment
 
