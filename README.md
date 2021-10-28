@@ -25,7 +25,7 @@ You should do all your edits locally after cloning this repository. Commit major
 
 ## Update hyperlinks
 
-1. Edit near the top of this `README.md` file to include a clickable hyperlink to the GitHub pages website for your repo. Replace `` `[insert your *clickable* hyperlink here]` `` with your clickable URL. 
+1. Edit near the top of this `README.md` file to include a clickable hyperlink to the GitHub pages website for your repo. Replace `` https://github.com/DS4200-Fall21-Sec02/hw-06-d3-brushing-and-linking-mo-sk-sm.git `` with your clickable URL. 
 
 1. In `index.html` update the GitHub repo URL with the URL of your repository. It is in the span with `id='forkongithub'`.
 
