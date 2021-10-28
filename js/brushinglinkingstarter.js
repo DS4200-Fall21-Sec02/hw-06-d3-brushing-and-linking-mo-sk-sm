@@ -11,7 +11,7 @@ var svg1 = d3
   .append("g")
   .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-//TODO: append svg object to the body of the page to house Scatterplot 2
+// append svg object to the body of the page to house Scatterplot 2
 var svg2 = d3
   .select("#dataviz_brushScatter")
   .append("svg")
@@ -20,7 +20,8 @@ var svg2 = d3
   .append("g")
   .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-//TODO: append svg object to the body of the page to house Bar chart 
+// append svg object to the body of the page to house Bar chart 
+
 var svg3 = d3
   .select("#dataviz_brushScatter")
   .append("svg")
@@ -100,13 +101,21 @@ d3.csv("data/iris.csv").then((data) => {
       })
       .style("opacity", 0.5);
 
-    //TODO: Define a brush
+    // Define a brush
+    // adding brush feature within D3
+      var brush1 = d3.brush()                 
+       .extent([[0,0], [width,height]])
+       .on('start',clear) 
+       .on("brush", updateChart1)
 
-    //TODO: Add brush to the svg
+    // Adding brush to the svg
     
-  }
+    svg1
+    .call(brush1)
+    .attr('id','brush1');
+    }
 
-  //TODO: Scatterplot 2 (show Sepal width on x-axis and Petal width on y-axis)
+  // Scatterplot 2 (show Sepal width on x-axis and Petal width on y-axis)
   {
     var xKey2 = "Sepal_Width";
     var yKey2 = "Petal_Width";
@@ -147,8 +156,8 @@ d3.csv("data/iris.csv").then((data) => {
           .attr("text-anchor", "start")
           .text(yKey2)
       );
-
-      var myCircle2 = svg2
+    // Adding dots onto scatter 2  
+    var myCircle2 = svg2
       .append("g")
       .selectAll("circle")
       .data(data)
@@ -167,13 +176,70 @@ d3.csv("data/iris.csv").then((data) => {
       })
       .style("opacity", 0.5);
 
-    //TODO: Define a brush
+    // Define a second brush
+      // adding second brush feature within D3
+    var brush2 = d3.brush()                 
+      .extent([[0,0], [width,height]])
+      .on('start',clear) 
+      .on("brush", updateChart2)
 
-    //TODO: Add brush to the svg
+    // Adding brush to the svg
     
-  }
+    svg2
+    .call(brush2)
+    .attr('id','brush2');
+    }
+    
+  
 
-  //TODO: Barchart with counts of different species
+  //Barchart with counts of different species
+  {
+    // Define x and y scales
+    var yScale = d3.scaleLinear()
+                    .domain([0,maxY])
+                    .range([height,0]); 
+
+    var xScale = d3.scaleBand()
+                   .domain(data.map(d => d.Species))
+                   .range([0, width])
+                   .padding(0.2); 
+  // Add axes to the chart
+
+  // Add Y axis
+    var yAxis = d3.axisLeft(yScale);
+    svg3.append("g")
+        .call(yAxis);
+
+  // Add X axis
+    var xAxis = d3.axisBottom(xScale);
+    svg3.append("g")
+        .attr("transform", `translate(0,${height})`)
+        .call(xAxis);
+
+
+  // We used StackOverflow for assistance on this Link: https://stackoverflow.com/a/42123984
+  let species = [... new Set(data.map(d => d.Species))]; 
+  let speciesData = []
+  for (let i=0; i<species.length; i++) {
+    let numSpecies = data.filter(d => d.Species===species[i]).length;
+    speciesData.push({"Species": species[i], "Quantity": numSpecies})
+  }
+  console.log(speciesData)  
+
+  // Add bars to chart
+  var myBar = svg3 // select everything classed "bar"
+      .append("g")
+      .selectAll("rect")
+      .data(speciesData)
+      .enter()
+      .append("rect")
+      .attr("id", d => d.Species)
+      .attr("x", d => xScale(d.Species))
+      .attr("y", d => yScale(d.Quantity))
+      .attr("height", d => yScale(0) - yScale(d.Quantity))
+      .attr("width", xScale.bandwidth())
+      .style("fill", d => color(d.Species));
+}     
 
   //Brushing Code---------------------------------------------------------------------------------------------
     
@@ -188,9 +254,12 @@ d3.csv("data/iris.csv").then((data) => {
         extent = brushEvent.selection;
     
         //TODO: Check all the circles that are within the brush region in Scatterplot 1
+        myCircle1.classed("selected", function(d){ return isBrushed(extent, x1(d[xKey1]), y1(d[yKey1]) ) } )
  
     
         //TODO: Select all the data points in Scatterplot 2 which have the same id as those selected in Scatterplot 1
+        var selectedIDs = svg1.selectAll(".selected").nodes().map((circle) => circle['id']);
+        myCircle2.classed("selected", (d) => selectedIDs.includes(d.id) )
       
     }
 
@@ -200,10 +269,15 @@ d3.csv("data/iris.csv").then((data) => {
       var selectedSpecies = new Set();
 
       //TODO: Check all the circles that are within the brush region in Scatterplot 2
+      myCircle2.classed("selected", function(d){ return isBrushed(extent, x2(d[xKey2]), y2(d[yKey2]) )}) ;
 
       //TODO: Select all the data points in Scatterplot 1 which have the same id as those selected in Scatterplot 2
+      var selectedIDs = svg2.selectAll(".selected").nodes().map((circle) => circle['id']);
+      myCircle1.classed("selected", (d) => selectedIDs.includes(d.id) );
 
       //TODO: Select bars in bar chart based on species selected in Scatterplot 2
+      var selectedSpecies = [... new Set(data.filter(d => selectedIDs.includes(d.id)).map(d => d.Species))];
+      myBar.classed("selected", d => selectedSpecies.includes(d.Species))
 
     }
 
