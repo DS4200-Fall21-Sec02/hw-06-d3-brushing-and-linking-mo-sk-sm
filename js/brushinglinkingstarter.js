@@ -195,20 +195,13 @@ d3.csv("data/iris.csv").then((data) => {
   //Barchart with counts of different species
   {
     // Define x and y scales
-    var yScale = d3.scaleLinear()
-                    .domain([0,maxY])
-                    .range([height,0]); 
-
     var xScale = d3.scaleBand()
                    .domain(data.map(d => d.Species))
                    .range([0, width])
                    .padding(0.2); 
-  // Add axes to the chart
-
-  // Add Y axis
-    var yAxis = d3.axisLeft(yScale);
-    svg3.append("g")
-        .call(yAxis);
+    var yScale = d3.scaleLinear()
+                    .domain([0,50])
+                    .range([height,0]);     
 
   // Add X axis
     var xAxis = d3.axisBottom(xScale);
@@ -216,18 +209,22 @@ d3.csv("data/iris.csv").then((data) => {
         .attr("transform", `translate(0,${height})`)
         .call(xAxis);
 
+  // Add Y axis
+    var yAxis = d3.axisLeft(yScale);
+    svg3.append("g")
+        .call(yAxis);
 
   // We used StackOverflow for assistance on this Link: https://stackoverflow.com/a/42123984
-  let species = [... new Set(data.map(d => d.Species))]; 
-  let speciesData = []
-  for (let i=0; i<species.length; i++) {
-    let numSpecies = data.filter(d => d.Species===species[i]).length;
-    speciesData.push({"Species": species[i], "Quantity": numSpecies})
-  }
-  console.log(speciesData)  
+    let species = [... new Set(data.map(d => d.Species))]; 
+    let speciesData = []
+    for (let i=0; i<species.length; i++) {
+      let numSpecies = data.filter(d => d.Species===species[i]).length;
+      speciesData.push({"Species": species[i], "Quantity": numSpecies})
+    }
+    console.log(speciesData)  
 
   // Add bars to chart
-  var myBar = svg3 // select everything classed "bar"
+    var myBar = svg3 // select everything classed "bar"
       .append("g")
       .selectAll("rect")
       .data(speciesData)
@@ -239,7 +236,7 @@ d3.csv("data/iris.csv").then((data) => {
       .attr("height", d => yScale(0) - yScale(d.Quantity))
       .attr("width", xScale.bandwidth())
       .style("fill", d => color(d.Species));
-}     
+  }     
 
   //Brushing Code---------------------------------------------------------------------------------------------
     
